@@ -1,83 +1,24 @@
-================================================================
-  08 - INTER-ARDUINO COMMUNICATION (UART LINK)
-================================================================
+UART Link
+=========
 
-How the two Arduinos talk to each other. This is one of the
-most important things to understand on this project, because
-if the wiring is wrong here, the whole system breaks weirdly.
+The two Arduinos talk over hardware serial.
 
+Settings:
+- baud rate: 9600
+- line-based text messages
 
-THE LINK: HARDWARE UART
------------------------
-UART = Universal Asynchronous Receiver/Transmitter. It's the
-simplest serial communication you can do between two chips —
-literally one wire per direction.
+Wiring:
+- master D1 goes to slave D0
+- slave D1 goes to master D0
+- master GND goes to slave GND
 
-We use the Uno's HARDWARE UART on pins D0 (RX) and D1 (TX).
+Messages:
+- master to slave:
+  - `M,ax,ay,az,gx,gy,gz`
+- slave to master:
+  - `OBSTACLE`
 
-  * Baud rate: 9600
-  * Format: line-based plain text (newline terminated)
-  * No parity, no flow control — keep it simple.
-
-
-THE WIRING (CROSS-WIRED)
-------------------------
-Each Arduino's TX must go to the other Arduino's RX. Plus they
-need a shared GROUND, which is essential.
-
-   Master D1 (TX) ---------> Slave  D0 (RX)
-   Slave  D1 (TX) ---------> Master D0 (RX)
-   Master GND     ---------- Slave  GND
-
-If you forget the GND wire, the signal voltage has no
-reference and you'll see garbage characters.
-
-
-THE PROTOCOL
-------------
-
-Master -> Slave  (about 5 times per second):
-
-    M,ax,ay,az,gx,gy,gz
-
-  Six signed 16-bit integers from the MPU-6050 (accelerometer
-  + gyroscope raw values). The slave parses this and updates
-  the LCD.
-
-Slave -> Master  (event-driven, rate-limited to ~1 per second):
-
-    OBSTACLE
-
-  Sent whenever the slave's side ultrasonic sees something
-  within 25 cm. The master responds by veering ~60 degrees
-  away from that side.
-
-The short prefixes ("M," and "OBSTACLE") are intentional — they
-let each board ignore lines it doesn't recognize. So when the
-master prints debug output with Serial.println("blah blah"),
-the slave just skips it instead of crashing the parser.
-
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  CRITICAL GOTCHA: UPLOADING CODE
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-D0/D1 are ALSO the USB serial pins on the Arduino. When you
-plug a USB cable in to upload a sketch, the USB chip uses
-those same pins.
-
-==> You MUST disconnect the cross-wires (or at least the wire
-    going INTO the D0 pin of the board you're uploading to)
-    BEFORE flashing either Arduino.
-
-If you don't, the upload will fail with weird timeout errors
-because the other Arduino is fighting for the same pins.
-Plug them back in after upload completes.
-
-
-WHY UART AND NOT I2C?
----------------------
-We're already using I2C on both boards for other things
-(MPU on master, LCD on slave). UART is also simpler for a
-basic one-way text stream like this — no master/slave address
-nonsense.
+Important upload note:
+- D0 and D1 are also the USB serial pins
+- unplug the serial cross-wires before uploading code
+- reconnect them after uploading

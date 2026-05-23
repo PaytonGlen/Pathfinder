@@ -1,62 +1,18 @@
-================================================================
-  06 - ENVIRONMENTAL SENSORS (LIGHT + TEMPERATURE)
-================================================================
+Light And Temp Sensors
+======================
 
-Two simple analog sensors that monitor the world around the
-tank. Both live on the SLAVE Arduino and feed values to the
-LCD display.
+Both of these sensors are on the slave Arduino.
 
+Photoresistor:
+- used for light level
+- connected to A0
+- read as a normal analog value
 
-PHOTORESISTOR / LDR (LIGHT SENSOR)
-----------------------------------
-A "light dependent resistor". Resistance CHANGES based on how
-much light is hitting it.
+TMP36:
+- used for temperature
+- connected to A1
+- also read as an analog value
 
-  * Dark   -> high resistance
-  * Bright -> low resistance
-
-We wire it as a VOLTAGE DIVIDER with a fixed resistor, so the
-analog pin sees a voltage that changes with light level.
-
-KEY SPECS:
-  * Output range (after voltage divider, on A0):
-      ~50    in near-total darkness
-      ~1000  in bright direct light
-
-PIN ON SLAVE:  A0  (analog read, 0-1023)
-
-WHAT WE USE IT FOR:
-Live reading on the LCD. Could also drive behaviors like
-"slow down in the dark" if we wanted.
-
-
-TMP36 TEMPERATURE SENSOR
-------------------------
-Analog Devices temperature sensor in a tiny 3-pin TO-92 package
-(looks like a transistor).
-
-KEY SPECS:
-  * Output: 10 mV per degree C, with a 500 mV OFFSET
-            (so 0 C = 0.5 V, 25 C = 0.75 V, 100 C = 1.5 V)
-  * Range:  -40 C to +125 C
-  * Accuracy: +/- 2 C (uncalibrated)
-
-PIN ON SLAVE:  A1  (analog read)
-
-
-HOW WE CONVERT THE READING
---------------------------
-We display temperature in Fahrenheit on the LCD. To avoid the
-slow floating-point math on an Arduino, we use integer math
-and store the value as "tenths of a degree F":
-
-    T_x10_F = (((analog * 5000 / 1024) - 500) * 9 / 5) + 320
-
-Then we divide by 10 when displaying.
-
-
-WHY THESE TWO ON THE SLAVE?
----------------------------
-They're slow, low-priority sensors and they don't affect
-driving decisions. Perfect work for the "recorder" Arduino
-that has time to format strings and update the LCD.
+What we do with them:
+- show both on the LCD
+- they are not part of the actual driving logic right now
