@@ -1,10 +1,10 @@
-WanderAvoid
-===========
+ObstacleAvoidance
+=================
 
 This is the basic autonomous driving sketch for the master board.
 
 How to use it:
-- open and upload `WanderAvoid.ino`
+- open and upload `ObstacleAvoidance.ino`
 - place the tank on the floor and let it run
 - press reset if you want to restart it
 
@@ -15,7 +15,7 @@ What it does:
 - repeats
 
 Important files:
-- `WanderAvoid.ino` runs the main loop
+- `ObstacleAvoidance.ino` runs the main loop
 - `Pins.h` has the master board pin assignments
 - `DriveConfig.h` has drive speed and turn timing values
 - `WanderLogic.h` has the obstacle distance and backup timing

@@ -1,4 +1,4 @@
-// Flow step 2 in this folder: this header declares the behavior functions used by WanderAvoid.ino.
+// Flow step 2 in this folder: this header declares the behavior functions used by ObstacleAvoidance.ino.
 
 #ifndef WANDER_LOGIC_H
 #define WANDER_LOGIC_H
