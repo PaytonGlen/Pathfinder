@@ -1,3 +1,5 @@
+/* THIS WONT BE NEEDED ANYMORE */
+
 Light And Temp Sensors
 ======================
 

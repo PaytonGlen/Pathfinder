@@ -1,4 +1,4 @@
-IMU
+accelerometer & Gyroscope
 ===
 
 We use an MPU-6050 on a GY-521 breakout board.
