@@ -1,0 +1,62 @@
+================================================================
+  01 - MICROCONTROLLERS (THE BRAINS)
+================================================================
+
+We use TWO Arduino Uno R3 boards, each running its own sketch.
+They communicate over a serial wire (see 08_Communication.txt).
+
+
+MASTER ARDUINO UNO R3 - "The Driver"
+------------------------------------
+This board is in charge of anything that has to react fast:
+driving the tank and avoiding obstacles.
+
+  * Handles drive motors (via the motor driver shield)
+  * Reads the front + scanning ultrasonic sensors
+  * Reads the IR distance sensor
+  * Reads the MPU-6050 (accelerometer/gyro)
+  * Drives the pan/tilt servo arm
+  * Receives commands from the IR remote
+  * STREAMS motion data out to the slave for logging/display
+
+Why it gets the "fast" stuff: all the safety-critical decisions
+(when to stop, when to turn) happen here so there's no delay
+waiting on another chip.
+
+
+SLAVE ARDUINO UNO R3 - "The Recorder"
+-------------------------------------
+This board handles slower, less time-critical jobs:
+
+  * Drives the 16x2 LCD over I2C
+  * Reads the photoresistor (light level)
+  * Reads the TMP36 (temperature)
+  * Reads its own ultrasonic sensor on the side shoulder
+  * Sends "OBSTACLE" alerts to the master when something gets
+    too close on the side
+  * Receives MPU data from the master and shows it on the LCD
+
+Powered SEPARATELY by a 9V battery per the rubric requirement.
+
+
+COMMON SPECS (both boards)
+--------------------------
+  * Chip:        ATmega328P
+  * Clock:       16 MHz
+  * Flash:       32 KB
+  * SRAM:        2 KB
+  * Logic:       5 V
+  * Digital pins: 14 (6 PWM-capable)
+  * Analog pins:  6 (10-bit, reads 0-1023)
+
+
+WHY TWO ARDUINOS?
+-----------------
+The stock Conqueror kit uses ONE Arduino. We ran out of pins
+once we tried to add the IMU, multiple ultrasonics, the servo
+arm, AND the LCD. Splitting into "navigator + recorder" freed
+pins on both boards and let each sketch stay focused on one
+job.
+
+The trade-off: now we have to manage inter-board communication.
+That's handled by the UART link — see 08_Communication.txt.

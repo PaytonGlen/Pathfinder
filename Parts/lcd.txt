@@ -1,0 +1,60 @@
+================================================================
+  07 - DISPLAY (16x2 LCD)
+================================================================
+
+The little blue screen on top of the tank that shows live
+readings. Lives on the SLAVE Arduino.
+
+
+16x2 LCD WITH PCF8574 I2C BACKPACK
+----------------------------------
+"16x2" = 16 characters wide, 2 rows tall.
+
+Two parts physically soldered together:
+
+  1) THE LCD ITSELF
+     - HD44780-compatible character LCD
+     - Has a built-in adjustable contrast pot on the back
+     - Backlight is controllable from code
+
+  2) THE I2C BACKPACK
+     - A small board with a PCF8574 chip soldered behind the LCD
+     - PCF8574 is an 8-bit I/O expander
+     - WHY IT MATTERS: a raw HD44780 LCD needs 6+ wires to the
+       Arduino. The backpack converts that into just 4 wires
+       using the I2C protocol. Massive wiring win.
+
+KEY SPECS:
+  * Communication: I2C
+  * I2C address: 0x27   (typical, can vary)
+  * Power: 5 V (drawn from the slave Arduino)
+
+
+PINS ON SLAVE
+-------------
+  A4 -> SDA  (I2C data)
+  A5 -> SCL  (I2C clock)
+
+  (Same I2C bus as the MPU on the master side. Each board has
+   its own I2C bus, so no conflict between them.)
+
+
+WHAT IT SHOWS
+-------------
+Right now the LCD displays a few rotating values:
+  * Live photoresistor reading (light level)
+  * Temperature in degrees F (from the TMP36)
+  * Accelerometer X/Y/Z values streamed from the master
+
+For Project 3 we may add more readouts — we'll re-plan layout
+once we see the new rubric.
+
+
+GOTCHAS
+-------
+  * Contrast: if the screen looks blank or full of black boxes,
+    twist the little blue potentiometer on the back of the
+    backpack. That's contrast, not a code bug.
+  * I2C address can be 0x27 OR 0x3F depending on the unit. If
+    "nothing shows up" check the address with an I2C scanner
+    sketch.

@@ -1,0 +1,71 @@
+================================================================
+  02 - DRIVE MOTORS (MAKES THE TANK MOVE)
+================================================================
+
+Two parts work together to drive the tank:
+  1) The motor driver shield (the "muscle controller")
+  2) The DC gear motors (the actual "muscles")
+
+Both belong to the MASTER Arduino's subsystem.
+
+
+TB6612FNG MOTOR DRIVER SHIELD (ELEGOO V1.1)
+-------------------------------------------
+This sits on top of the master Arduino like a hat. It contains
+a Toshiba TB6612FNG dual H-bridge chip.
+
+WHY WE NEED IT:
+The Arduino's pins can only output ~20 mA each. The motors need
+HUNDREDS of mA. The motor driver acts like a power amplifier
+and direction controller. The Arduino tells it "go forward at
+70% speed" and the driver handles the actual current.
+
+KEY SPECS:
+  * Drives 2 motors independently (PWM speed + direction)
+  * Motor voltage: 4.5 - 13.5 V
+  * Current: 1.2 A continuous per channel (3.2 A peak)
+  * Has built-in flyback diodes + thermal shutdown
+  * STBY pin lets us shut the motors off for low power
+
+PINS USED ON MASTER:
+  D3  -> STBY  (motor enable/disable)
+  D5  -> PWMA  (right motor speed, 0-255)
+  D6  -> PWMB  (left motor speed, 0-255)
+  D7  -> AIN1  (right motor direction)
+  D8  -> BIN1  (left motor direction)
+
+
+2x DC GEAR MOTORS
+-----------------
+These are the actual motors spinning the rubber tracks.
+
+KEY SPECS:
+  * 6 V nominal
+  * Internally geared down -> low speed, high torque (good
+    for moving a tank)
+  * Speed control by PWM duty cycle (0 = stopped, 255 = full)
+
+CALIBRATION NOTE (IMPORTANT):
+The two motors don't spin at exactly the same speed even when
+given the same PWM. We measured and tuned:
+
+    LEFT_DRIVE_SPEED  = 173
+    RIGHT_DRIVE_SPEED = 180
+
+These compensate for the natural mismatch and make the tank
+drive straight. If you ever change motors, you'll need to
+re-tune these.
+
+
+HOW TURNING WORKS
+-----------------
+There's no steering wheel. Like a real tank, we use
+DIFFERENTIAL DRIVE:
+
+  * Left track faster than right  -> turns right
+  * Right track faster than left  -> turns left
+  * Tracks spin opposite directions -> tank spins in place
+
+Since we don't have wheel encoders, turn angles are TIME-BASED.
+We use calibrated constants MS_PER_FOOT and MS_PER_90_DEG that
+we measured on hard floor.

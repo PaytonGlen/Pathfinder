@@ -1,0 +1,57 @@
+================================================================
+  05 - MOTION SENSOR / IMU (MPU-6050)
+================================================================
+
+This is how the tank knows how it's moving / how it's oriented.
+Lives on the MASTER Arduino, but the data it produces gets
+streamed over UART to the SLAVE so it can be displayed/logged.
+
+
+MPU-6050 (on GY-521 BREAKOUT BOARD)
+-----------------------------------
+The MPU-6050 chip itself is from InvenSense (now owned by TDK).
+We use it mounted on the common "GY-521" little blue breakout
+board, which adds a 3.3 V voltage regulator and I2C pull-up
+resistors so it plays nicely with the Arduino's 5 V system.
+
+WHAT IT IS:
+A SIX-AXIS motion sensor:
+  * 3-axis ACCELEROMETER  -> measures linear acceleration (g)
+                             on X, Y, Z axes
+  * 3-axis GYROSCOPE      -> measures rotation rate (degrees/sec)
+                             around X, Y, Z axes
+
+KEY SPECS:
+  * Communication: I2C (only 2 wires for data: SDA + SCL)
+  * Default I2C address: 0x68
+  * Accelerometer range: +/- 2g (default), 16-bit resolution
+                         (~16,384 LSB per g)
+  * Gyroscope range:     +/- 250 deg/sec (default), 16-bit
+                         (~131 LSB per deg/sec)
+  * Sample rate: up to 1 kHz
+
+PINS ON MASTER:
+  A4 -> SDA  (I2C data)
+  A5 -> SCL  (I2C clock)
+
+  (These are the standard I2C pins on an Uno - the Wire library
+   uses them automatically.)
+
+
+HOW WE USE IT
+-------------
+The master polls the MPU about 5 times per second and ships
+the 6 raw values to the slave over UART in a line like this:
+
+    M,ax,ay,az,gx,gy,gz
+
+The slave parses it and shows the accelerometer values on the
+LCD. We can also use it for tilt detection or to confirm the
+tank is actually moving when we think it is.
+
+
+WHY ON THE MASTER?
+------------------
+The IMU is closest to the drive system, so it gets the most
+useful motion data when mounted on the master. The slave just
+needs to display/log it, not react to it.

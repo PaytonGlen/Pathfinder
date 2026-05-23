@@ -1,0 +1,78 @@
+================================================================
+  04 - DISTANCE SENSORS (HOW THE TANK "SEES" OBSTACLES)
+================================================================
+
+We use 4 sensors total to detect obstacles:
+  * 3x HC-SR04 ultrasonics
+  * 1x Sharp GP2Y0A41 infrared distance sensor
+
+The reason for using two DIFFERENT sensor types is fusion:
+each catches things the other one misses (more on that below).
+
+
+HC-SR04 ULTRASONIC SENSORS (3 total)
+====================================
+Classic 4-pin "googly eyes" sensor. Sends out a 40 kHz sound
+pulse, listens for the echo, measures round-trip time.
+
+COMMON SPECS (all three are identical):
+  * Range:      2 cm - 400 cm
+  * Accuracy:   +/- 3 mm
+  * Beam:       ~15 degree cone
+  * Output:     ECHO pin pulse width = round trip time
+  * Distance formula:  cm = pulse_microseconds / 58
+
+
+--- ULTRASONIC #1 - FRONT EYE (on the master) ---
+  Fixed pointing straight forward.
+  Job: detect obstacles directly ahead -> trigger a stop.
+  PINS:  D13 = TRIG,  D12 = ECHO
+
+
+--- ULTRASONIC #2 - SCANNING EYE (on the master) ---
+  Mounted on the pan/tilt arm (see 03_Servos_and_Scanning_Arm).
+  Job: after the tank stops, sweep left/right to find which
+       direction has more clearance.
+  PINS:  A1 = TRIG,  A2 = ECHO
+
+
+--- ULTRASONIC #3 - SIDE EYE (on the slave) ---
+  Mounted on the opposite shoulder from the scanning arm.
+  Job: watches sideways. When something gets within 25 cm,
+       the slave sends "OBSTACLE" to the master, and the
+       master veers ~60 degrees away.
+  PINS:  D8 = TRIG,  D7 = ECHO
+
+
+SHARP GP2Y0A41SK0F - INFRARED DISTANCE SENSOR
+=============================================
+Short-range IR sensor. Lives on the scanning arm next to
+ultrasonic #2 (master side).
+
+KEY SPECS:
+  * Range:       4 cm - 30 cm  (short-range version)
+  * Output:      analog voltage (NON-linear curve)
+  * Voltage:     4.5 - 5.5 V supply
+  * Voltage curve (rough):
+      ~3.0 V at  4 cm
+      ~1.0 V at 20 cm
+      ~0.4 V at 30 cm
+
+PIN ON MASTER:  A0  (analog read)
+
+
+WHY BOTH ULTRASONIC + IR?
+=========================
+They have OPPOSITE blind spots, which is exactly what we want.
+
+  * ULTRASONIC = wide cone, long range. Bounces beautifully
+    off walls. But it SKIPS PAST thin or absorbent objects
+    like chair legs, fabric, sweatshirts.
+
+  * IR = narrow beam, short range. Catches thin nearby
+    objects. But useless past 30 cm.
+
+By checking BOTH on the scanning arm, a side is considered
+"blocked" if EITHER sensor flags an obstacle. That fusion is
+what makes the tank reliable around real-world furniture
+instead of just empty hallways.

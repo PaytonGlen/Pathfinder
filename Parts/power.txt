@@ -1,0 +1,64 @@
+================================================================
+  09 - POWER SYSTEM
+================================================================
+
+The two Arduinos have SEPARATE power supplies. This is on
+purpose — both for the rubric requirement and to keep noise
+from the motors out of the slave's sensitive sensors.
+
+
+MASTER + MOTORS (one shared supply)
+-----------------------------------
+  * Source: rechargeable battery pack mounted on the kit
+  * Connects through the motor driver shield
+  * Powers:
+      - The master Arduino (via Vin through the shield)
+      - The TB6612FNG motor driver
+      - The drive motors themselves
+  * One on/off switch controls all of the above
+
+
+SLAVE ARDUINO (separate supply)
+-------------------------------
+  * Source: 9V battery
+  * Connects via the slave Arduino's barrel jack
+  * Powers:
+      - The slave Arduino
+      - The LCD (drawn from the slave's 5V rail)
+      - The slave's photoresistor, TMP36, side ultrasonic
+  * Runtime: roughly 5-8 hours of continuous use
+  * NOTE: Required by the project rubric to be on its own
+    battery (not the kit's main pack).
+
+
+COMMON GROUND
+-------------
+Even though the two Arduinos have separate power supplies, we
+tie their GROUND pins together with a wire (this is part of
+the UART cable). Without a common ground reference, the serial
+signals between them won't be readable.
+
+Power supplies separate. Grounds connected. That's the rule.
+
+
+OPTIONAL: NEOPIXEL STRIP
+------------------------
+If we add a NeoPixel LED strip, it should be powered from a
+THIRD source (we've been using an 18650 Li-ion power bank).
+
+Why isolate it: NeoPixels pull current in sharp spikes when
+they change color, which can momentarily brown out the slave
+Arduino and reset it.
+
+Still tie the NeoPixel's GND to the slave's GND so the data
+signal works.
+
+
+QUICK REFERENCE TABLE
+---------------------
+  SUBSYSTEM            POWER SOURCE
+  -------------------  ----------------------------------------
+  Master + motors      Kit rechargeable battery pack (via shield)
+  Slave Arduino        9V battery via barrel jack
+  LCD + slave sensors  Slave Arduino's 5V rail
+  (Optional NeoPixels) Separate 18650 power bank

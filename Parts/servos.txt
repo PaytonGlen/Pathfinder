@@ -1,0 +1,63 @@
+================================================================
+  03 - SERVOS & SCANNING ARM
+================================================================
+
+The pan/tilt arm at the front of the tank holds the scanning
+ultrasonic sensor + the IR distance sensor. Two micro servos
+let us aim that arm.
+
+Both servos belong to the MASTER Arduino.
+
+
+2x SG90-CLASS MICRO SERVOS
+--------------------------
+These are the classic blue hobby servos you've seen in every
+beginner robot kit.
+
+KEY SPECS:
+  * Operating voltage: 4.8 - 6 V
+  * Stall torque: ~1.8 kg-cm  (plenty for the tiny arm)
+  * Travel: 0 - 180 degrees
+  * Speed: ~0.1 sec per 60 degrees (no load)
+  * Control signal: 50 Hz PWM, 1-2 ms pulse width
+    (We don't care about this - the Arduino Servo library
+    handles all the PWM details. We just call servo.write(45)
+    and it goes to 45 degrees.)
+
+
+HOW THEY'RE MOUNTED
+-------------------
+  * PAN servo  -> rotates the arm left/right horizontally
+  * TILT servo -> rotates the arm up/down vertically
+
+Together they form a 2-axis aiming arm. The scanning ultrasonic
+and IR sensor ride on the very tip.
+
+
+PINS USED ON MASTER
+-------------------
+  D10 -> Pan servo control wire
+  D11 -> Tilt servo control wire
+
+
+CALIBRATED ANGLES
+-----------------
+We figured these out by hand to fit our physical mount:
+
+    Pan center:       50 degrees
+    Pan full left:   110 degrees
+    Pan full right:    0 degrees
+    Tilt level:      160 degrees   (sensors looking forward)
+
+
+WHY WE NEED A SCANNING ARM AT ALL
+---------------------------------
+A single fixed forward sensor can only answer "is there
+something in front of me?" That's enough to STOP, but not
+enough to decide which way to TURN.
+
+With the pan-mounted arm, after the tank stops we sweep the
+sensor left and right, take distance readings at each angle,
+and pick the direction with the most open space. Smarter
+behavior at the cost of one servo sweep per obstacle event
+(about 1-2 seconds of "thinking").
