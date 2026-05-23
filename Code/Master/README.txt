@@ -1,33 +1,25 @@
-ScanWander
-==========
+Master
+======
 
-This is the master-side code for Project 3.
+This is the single master-side codebase for Project 3.
 
-What it needs:
-ScanWander needs to be adjusted to meet the following criteria:
-- Connect to a bluetooth device and mark it's location as the "Target"
-- scans for strongest bluetooth connections directio.
-- Once direction is found, proceed to the direction in a straight line
-- While en route, if an object is detected: the rover should navigate around the object
-- Once the object is cleared enough, the rover needs to proceed to the target
+How to use it:
+- open and upload `Master.ino`
+- change `ACTIVE_MODE` in `Master.ino` if you want a different behavior
+- upload the slave code too if you are using the two-board setup
+- unplug the D0/D1 serial wires before uploading, then reconnect them after
 
-How to use it right now:
-- open and upload `ScanWander.ino` to the master Arduino
-- upload the code in `Slave/` to the second Arduino if you are using the full two-board setup
-- unplug the D0/D1 cross-wires before uploading, then reconnect them after
-
-Current behavior in this folder:
-- drives forward until it detects something
-- backs up a little
-- scans left and right with the arm
-- turns toward the better side
-- sends MPU data to the slave board while moving
+Modes:
+- `MASTER_MODE_SCAN_WANDER` is the main scan-and-turn behavior
+- `MASTER_MODE_OBSTACLE_AVOIDANCE` is the simpler front-sensor behavior
+- `MASTER_MODE_DRIVE_SEQUENCE` is the fixed drive demo
 
 Important files:
-- `ScanWander.ino` runs the main loop
-- `Pins.h` has the master board pin assignments
-- `DriveConfig.h` has drive speed and turn timing values
-- `WanderLogic.*` has the obstacle and turn logic
-- `ScanArm.h` has `PAN_LEFT`, `PAN_CENTER`, `PAN_RIGHT`, `TILT_LEVEL`, and `SERVO_SETTLE_MS`
-- `SlaveLink.*` handles serial between the two Arduinos
-- `ScanWander Flow.png` is the flowchart for the behavior
+- `Master.ino` is the entry point
+- `src/Config/` has shared pin and drive settings
+- `src/Motors/` has motor control and movement helpers
+- `src/Sensors/` has ultrasonic, IR, and MPU code
+- `src/Arm/` has the scan arm servo code
+- `src/Comm/` has the serial link to the slave
+- `src/Logic/` has the behavior modules
+- `ScanWander Flow.png` is the flowchart for the scan-wander behavior

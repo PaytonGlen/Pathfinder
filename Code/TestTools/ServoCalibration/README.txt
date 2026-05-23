@@ -25,4 +25,4 @@ Important files:
 - `ServoCalibration.ino` runs the calibration tool
 - `Pins.h` has the servo pin numbers
 - `Servos.*` controls the pan and tilt servos
-- after calibration, copy the final angles into `Master/ScanArm.h`
+- after calibration, copy the final angles into `Master/src/Arm/ScanArm.h`
